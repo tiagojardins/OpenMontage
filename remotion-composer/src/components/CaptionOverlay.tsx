@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AbsoluteFill,
   Sequence,
@@ -110,8 +111,9 @@ const PageRenderer: React.FC<{
             const isActive = w.startMs <= currentMs && w.endMs > currentMs;
             const isPast = w.endMs <= currentMs;
             return (
+              <React.Fragment key={`${w.startMs}-${i}`}>
+              {i > 0 ? wordSeparator : ""}
               <span
-                key={`${w.startMs}-${i}`}
                 style={{
                   // Keep each word unbroken so lines wrap only at word
                   // boundaries. For space-delimited text this matches the
@@ -125,8 +127,9 @@ const PageRenderer: React.FC<{
                     : "0 2px 4px rgba(0,0,0,0.5)",
                 }}
               >
-                {w.word}{i < page.words.length - 1 ? wordSeparator : ""}
+                {w.word}
               </span>
+              </React.Fragment>
             );
           })}
         </span>
@@ -152,7 +155,7 @@ export const CaptionOverlay: React.FC<CaptionOverlayProps> = ({
     <AbsoluteFill>
       {pages.map((page, i) => {
         const fromFrame = Math.round((page.startMs / 1000) * fps);
-        const nextStart = pages[i + 1]?.startMs ?? page.endMs + 500;
+        const nextStart = Math.min(pages[i + 1]?.startMs ?? Infinity, page.endMs + 700);
         const duration = Math.max(
           1,
           Math.round(((nextStart - page.startMs) / 1000) * fps)
